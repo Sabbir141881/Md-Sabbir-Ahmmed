@@ -1,0 +1,261 @@
+[
+  { 
+    "id": "ekushey", 
+    "name": "Ekushey TV", 
+    "logo": "https://s4.gifyu.com/images/image534fa27d7683f33d.png", 
+    "category": "Bangla",
+    "streamUrl": "http://210.4.72.204/hls-live/livepkgr/_definst_/liveevent/livestream3.m3u8"
+  },
+  { 
+    "id": "deepto", 
+    "name": "Deepto TV", 
+    "logo": "https://i.postimg.cc/SQ9v6cfP/high-1772456522.jpg", 
+    "category": "Bangla",
+    "streamUrl": "https://byphdgllyk.gpcdn.net/hls/deeptotv/0_1/index.m3u8"
+  },
+  { 
+    "id": "btv", 
+    "name": "BTV", 
+    "logo": "https://ssl.com.bd/sites/default/files/BTV%20Logo%20Gallery.png", 
+    "category": "Bangla",
+    "streamUrl": "https://owrcovcrpy.gpcdn.net/bpk-tv/1709/output/index.m3u8"
+  },
+  { 
+    "id": "somoytv", 
+    "name": "SOMOY TV", 
+    "logo": "https://dl.dropbox.com/s/leielj83em5kg7h/somoy_news.png", 
+    "category": "Bangla",
+    "streamUrl": "https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/index.m3u8"
+  },
+  { 
+    "id": "channel24", 
+    "name": "Channel 24", 
+    "logo": "https://dl.dropbox.com/s/puf12xv5flgbnz5/channel24_bd.png", 
+    "category": "Bangla",
+    "streamUrl": "https://owrcovcrpy.gpcdn.net/bpk-tv/1703/output/index.m3u8"
+  },
+  { 
+    "id": "independenttv", 
+    "name": "INDEPENDENT TV", 
+    "logo": "https://dl.dropbox.com/s/7xwwb8hetz3w8rp/independent_tv.png", 
+    "category": "Bangla",
+    "streamUrl": "https://owrcovcrpy.gpcdn.net/bpk-tv/1704/output/index.m3u8"
+  },
+  { 
+    "id": "ekattortv", 
+    "name": "Ekattor TV", 
+    "logo": "https://s4.gifyu.com/images/imagea02f4314e761661d.png", 
+    "category": "Bangla",
+    "streamUrl": "https://owrcovcrpy.gpcdn.net/bpk-tv/1705/output/index.m3u8"
+  },
+  { 
+    "id": "jamunatv", 
+    "name": "JAMUNA TV", 
+    "logo": "https://dl.dropbox.com/s/k7z1dsec1jfjbkn/jamuna_tv_bd.png", 
+    "category": "Bangla",
+    "streamUrl": "https://owrcovcrpy.gpcdn.net/bpk-tv/1701/output/index.m3u8"
+  },
+  { 
+    "id": "atnnews", 
+    "name": "ATN NEWS", 
+    "logo": "https://dl.dropbox.com/s/4ldi1dp09s8o6bm/atn_news_bd.png", 
+    "category": "Bangla",
+    "streamUrl": "https://owrcovcrpy.gpcdn.net/bpk-tv/1706/output/index.m3u8"
+  },
+  { 
+    "id": "atnbangla", 
+    "name": "ATN Bangla", 
+    "logo": "https://s6.gifyu.com/images/image27cfa7002786c232.png", 
+    "category": "Bangla",
+    "streamUrl": "https://owrcovcrpy.gpcdn.net/bpk-tv/1722/output/index.m3u8"
+  },
+  { 
+    "id": "ntv", 
+    "name": "NTV", 
+    "logo": "https://www.ntvbd.com/sites/default/files/aggregator/2020/02/17/ntv-channel_0.jpg", 
+    "category": "Bangla",
+    "streamUrl": "https://owrcovcrpy.gpcdn.net/bpk-tv/1716/output/index.m3u8"
+  },
+  { 
+    "id": "channeli_new", 
+    "name": "Channel I", 
+    "logo": "https://cdn.tvpassport.com/image/station/240x135/channel-i-bangla.png", 
+    "category": "Bangla",
+    "streamUrl": "https://owrcovcrpy.gpcdn.net/bpk-tv/1723/output/index.m3u8"
+  },
+  { 
+    "id": "banglavision", 
+    "name": "Banglavision", 
+    "logo": "https://raw.githubusercontent.com/subirkumarpaul/Logo/main/Banglavision.png", 
+    "category": "Bangla",
+    "streamUrl": "https://owrcovcrpy.gpcdn.net/bpk-tv/1715/output/index.m3u8"
+  },
+  { 
+    "id": "tsports", 
+    "name": "T Sports", 
+    "logo": "https://tvassets.roarzone.info/images/102.png", 
+    "category": "Sports",
+    "streamUrl": "http://198.195.239.50:8095/Tsports/tracks-v1a1/mono.m3u8"
+  },
+  { 
+    "id": "starsports1", 
+    "name": "Star Sports 1", 
+    "logo": "https://tvassets.roarzone.info/images/25.png", 
+    "category": "Sports",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/star-sports-1/index.m3u8?token=d8aabeee2cb05cbc64401095d9e0f448ac5af548-886852e5ae022da5db6f9cb9faa84857-1772378241-1772374641"
+  },
+  { 
+    "id": "starsports2", 
+    "name": "Star Sports 2", 
+    "logo": "https://tvassets.roarzone.info/images/26.png", 
+    "category": "Sports",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/star-sports-2/index.m3u8?token=78ee0af2212c49ffa7044db3ec39e5ad2b816c6e-ede6fc81fcd83abe94a6eaab94f7710c-1772378241-1772374641"
+  },
+  { 
+    "id": "gazitv", 
+    "name": "Gazi TV", 
+    "logo": "https://tvassets.roarzone.info/images/1.png", 
+    "category": "Sports",
+    "streamUrl": "http://tvn2.chowdhury-shaheb.com/gazitv/index.m3u8"
+  },
+  { 
+    "id": "ptvsports", 
+    "name": "PTV Sports", 
+    "logo": "https://tvassets.roarzone.info/images/73.png", 
+    "category": "Sports",
+    "streamUrl": "http://198.195.239.50:8095/PTV/index.m3u8"
+  },
+  { 
+    "id": "asports", 
+    "name": "A Sports", 
+    "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/8/87/A_Sports_logo.png/250px-A_Sports_logo.png", 
+    "category": "Sports",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/a-sports/index.m3u8?token=8c8a9d80b8ea87dea009c38655a9904ae419fe39-cb780de45a7f3b57b72a760f4e926549-1772378241-1772374641"
+  },
+  { 
+    "id": "fifatv", 
+    "name": "FIFA TV", 
+    "logo": "https://i.postimg.cc/4NJQYcLF/FIFA-(App-Icon).webp", 
+    "category": "Sports",
+    "streamUrl": "https://c822c659.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/U2Ftc3VuZy1pbl9GSUZBUGx1c0VuZ2xpc2hfSExT/playlist.m3u8"
+  },
+  { 
+    "id": "football", 
+    "name": "Foot Ball", 
+    "logo": "", 
+    "category": "Sports",
+    "streamUrl": "https://stream1.liveland.af/hls/tv/solh-sports/playlist.m3u8"
+  },
+  { 
+    "id": "cricketold", 
+    "name": "Cricket Old", 
+    "logo": "https://i.postimg.cc/qMLQwwhs/high-1772456626.jpg", 
+    "category": "Sports",
+    "streamUrl": "https://dltcbyrjz4q6b.cloudfront.net/scheduler/scheduleMaster/418.m3u8"
+  },
+  { 
+    "id": "eurosports", 
+    "name": "Euro Sports", 
+    "logo": "https://tvassets.roarzone.info/images/euro_sports_hd.png", 
+    "category": "Sports",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge3/euro-sport-hd/index.m3u8?token=646c487716e9e3833e0c06524df16a9e95d76e66-5984f44a441fa47599356d29d4ccb514-1772371109-1772367509"
+  },
+  { 
+    "id": "tencricket", 
+    "name": "Ten Cricket", 
+    "logo": "https://tvassets.roarzone.info/images/ten_cricket.png", 
+    "category": "Sports",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge3/sony-ten-cricket/index.m3u8?token=2795ff83dad75e4971d128d93da2abb49dcd2e0f-e2166ee05415fac49fb173812cc00440-1772371109-1772367509"
+  },
+  { 
+    "id": "willowtv", 
+    "name": "Willow TV", 
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Willow_TV_logo.svg/1200px-Willow_TV_logo.svg.png", 
+    "category": "Sports",
+    "streamUrl": "http://198.195.239.50:8095/WiLLow/index.m3u8"
+  },
+  { 
+    "id": "motupatlu", 
+    "name": "Motu Patlu", 
+    "logo": "https://instasize.com/api/image/db34be87981b799f67f5898c193906669c11ce93e882fcf47ef0d7af191887b8.jpeg", 
+    "category": "Kids",
+    "streamUrl": "https://cloudfrontnet.vercel.app/tplay/playout/209622/master.m3u8"
+  },
+  { 
+    "id": "doraemon", 
+    "name": "Doraemon", 
+    "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/b/bd/Doraemon_character.png/220px-Doraemon_character.png", 
+    "category": "Kids",
+    "streamUrl": "https://cloudfrontnet.vercel.app/tplay/playout/209902/master.m3u8"
+  },
+  { 
+    "id": "gopalbar", 
+    "name": "Gopal Bar", 
+    "logo": "https://justinprint.in/wp-content/uploads/2015/01/humor.jpg", 
+    "category": "Kids",
+    "streamUrl": "https://cloudfrontnet.vercel.app/tplay/playout/209611/master.m3u8"
+  },
+  { 
+    "id": "junglebook", 
+    "name": "Jungle Book", 
+    "logo": "https://i.postimg.cc/wvyFZnMN/high-1772445896.jpg", 
+    "category": "Kids",
+    "streamUrl": "https://cc-4bhi5osabejc9.akamaized.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-4bhi5osabejc9/junglebook.m3u8"
+  },
+  { 
+    "id": "zoomoo", 
+    "name": "ZooMoo", 
+    "logo": "https://i.postimg.cc/8PHdKTwT/high-1772445942.jpg", 
+    "category": "Kids",
+    "streamUrl": "https://amg01553-blueantmediaasi-zoomoonz-samsungnz-rdufn.amagi.tv/playlist/amg01553-blueantmediaasi-zoomoonz-samsungnz/playlist.m3u8"
+  },
+  { 
+    "id": "enter10bangla", 
+    "name": "Enter 10 Bangla", 
+    "logo": "https://instasize.com/api/image/06093c525b3a4cb039fa20b2eec62b7304247ba518139f16966b4e80ddbe1c9c.jpeg", 
+    "category": "Indian Bangla",
+    "streamUrl": "https://live-bangla.akamaized.net/liveabr/pub-iobanglakp3sff/live_720p/chunks.m3u8"
+  },
+  { 
+    "id": "jalshamovies", 
+    "name": "Jalsha Movies", 
+    "logo": "https://i.postimg.cc/44Hzgz5M/high-1772445614.jpg", 
+    "category": "Indian Bangla",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge3/jalsha-movies/index.m3u8"
+  },
+  { 
+    "id": "zeebangla", 
+    "name": "Zee Bangla", 
+    "logo": "https://i.postimg.cc/76vWNxYH/Z-Bangla-logo.jpg", 
+    "category": "Indian Bangla",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge3/zee-bangla/index.m3u8"
+  },
+  { 
+    "id": "zeebangla_cinema", 
+    "name": "Zee Bangla Cinema", 
+    "logo": "https://i.postimg.cc/yYS3Ms7P/high-1772445477.jpg", 
+    "category": "Indian Bangla",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge3/zee-bangla-cinema/index.m3u8"
+  },
+  { 
+    "id": "sonyaath", 
+    "name": "Sony Aath", 
+    "logo": "https://download.logo.wine/logo/Sony_Aath/Sony_Aath-Logo.wine.png", 
+    "category": "Indian Bangla",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge3/sony-aath/index.m3u8"
+  },
+  { 
+    "id": "hindimovie", 
+    "name": "Hindi Movie", 
+    "logo": "https://i.postimg.cc/4y6wPt2K/file-0000000011d47206a54e36951fd673c3.png", 
+    "category": "Movies",
+    "streamUrl": "https://live20.bozztv.com/giatvplayout7/giatv-209612/tracks-v1a1/mono.ts.m3u8"
+  },
+  { 
+    "id": "southmovie", 
+    "name": "South Movie", 
+    "logo": "https://i.postimg.cc/Ss7ztrqN/file-00000000b74872099fa2bd560d3d30b8.png", 
+    "category": "Movies",
+    "streamUrl": "https://live20.bozztv.com/giatvplayout7/giatv-209593/tracks-v1a1/mono.ts.m3u8"
+  }
+]

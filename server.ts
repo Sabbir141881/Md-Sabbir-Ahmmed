@@ -1,0 +1,168 @@
+import express from "express";
+import { createServer as createViteServer } from "vite";
+import fetch from "node-fetch";
+import path from "path";
+import { fileURLToPath } from "url";
+import http from "http";
+import https from "https";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Create agents with keep-alive enabled and SSL verification disabled for IPTV compatibility
+const httpAgent = new http.Agent({ keepAlive: true });
+const httpsAgent = new https.Agent({ 
+  keepAlive: true,
+  rejectUnauthorized: false // MANDATORY: Allow self-signed/invalid certs for IPTV
+});
+
+async function startServer() {
+  const app = express();
+  const PORT = 3000;
+
+  // Proxy endpoint to handle HTTP streams in HTTPS environment
+  app.get("/api/proxy", async (req, res) => {
+    const targetUrl = req.query.url as string;
+    if (!targetUrl) {
+      return res.status(400).send("URL parameter is required");
+    }
+
+    // MANDATORY FIX 2: Correct Headers for CORS and Caching
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+
+    try {
+      const isHttps = targetUrl.startsWith("https");
+      const agent = isHttps ? httpsAgent : httpAgent;
+      const urlObj = new URL(targetUrl);
+
+      // Default headers (mimic Chrome) - Works for GTV and others
+      let headers: Record<string, string> = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Connection": "keep-alive",
+        "Accept": "*/*",
+        "Referer": urlObj.origin + "/",
+        "Origin": urlObj.origin
+      };
+
+      // Special handling for the 198.x IPTV server (PTV, Willow, T Sports)
+      // These servers often reject browser headers or self-referers.
+      // We mimic VLC Media Player which usually works for these raw IPTV streams.
+      if (targetUrl.includes("198.195.239.50")) {
+        headers = {
+          "User-Agent": "VLC/3.0.18 LibVLC/3.0.18",
+          "Connection": "keep-alive",
+          "Accept": "*/*"
+        };
+      }
+
+      // MANDATORY FIX 6: Logging upstream requests
+      console.log(`[Proxy] Fetching: ${targetUrl} with UA: ${headers['User-Agent']}`);
+
+      const response = await fetch(targetUrl, {
+        agent,
+        headers,
+        timeout: 30000, // 30s timeout
+        redirect: 'follow'
+      });
+
+      // MANDATORY FIX 6 & 7: Log status and handle dead streams
+      if (!response.ok) {
+        console.error(`[Proxy Error] Upstream ${response.status} ${response.statusText} for ${targetUrl}`);
+        return res.status(response.status).send(`Upstream Error: ${response.statusText}`);
+      }
+
+      const contentType = response.headers.get("content-type");
+      
+      // MANDATORY FIX 1: Fully rewrite ALL m3u8 playlists
+      if (
+        targetUrl.includes(".m3u8") || 
+        (contentType && (contentType.includes("mpegurl") || contentType.includes("apple.mpegurl")))
+      ) {
+        let text = await response.text();
+        // Use response.url to handle redirects correctly
+        const finalUrl = response.url;
+        const baseUrl = new URL('.', finalUrl).href;
+        
+        // Set correct content type for HLS
+        res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
+
+        const lines = text.split("\n");
+        const rewrittenLines = lines.map(line => {
+          const trimmedLine = line.trim();
+          if (!trimmedLine) return line;
+
+          // Rewrite Key/Map URIs
+          if (trimmedLine.startsWith("#")) {
+            return trimmedLine.replace(/URI="([^"]+)"/g, (match, p1) => {
+              try {
+                const fullUrl = new URL(p1, baseUrl).href;
+                return `URI="/api/proxy?url=${encodeURIComponent(fullUrl)}"`;
+              } catch (e) {
+                return match;
+              }
+            });
+          }
+
+          // Rewrite Segment/Playlist URLs (lines that are not comments/tags)
+          try {
+            const fullUrl = new URL(trimmedLine, baseUrl).href;
+            return `/api/proxy?url=${encodeURIComponent(fullUrl)}`;
+          } catch (e) {
+            return line;
+          }
+        });
+        
+        return res.send(rewrittenLines.join("\n"));
+      }
+
+      // MANDATORY FIX 2: Streaming binary passthrough for segments (.ts, .m4s, etc.)
+      if (contentType) res.setHeader("Content-Type", contentType);
+      
+      // Pipe the response body directly to the client
+      if (response.body) {
+        response.body.pipe(res);
+        response.body.on('error', (err) => {
+            console.error('[Proxy] Stream error:', err);
+            res.end();
+        });
+      } else {
+        res.end();
+      }
+
+    } catch (error: any) {
+      console.error(`[Proxy Fatal] ${error.message} for ${targetUrl}`);
+      // Distinguish between timeout and other errors
+      const status = error.name === 'AbortError' ? 504 : 500;
+      res.status(status).send(`Proxy Error: ${error.message}`);
+    }
+  });
+
+  // API routes
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "ok" });
+  });
+
+  // Vite middleware for development
+  if (process.env.NODE_ENV !== "production") {
+    const vite = await createViteServer({
+      server: { middlewareMode: true },
+      appType: "spa",
+    });
+    app.use(vite.middlewares);
+  } else {
+    app.use(express.static(path.join(__dirname, "dist")));
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(__dirname, "dist", "index.html"));
+    });
+  }
+
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on http://0.0.0.0:${PORT}`);
+  });
+}
+
+startServer();
