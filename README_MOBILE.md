@@ -1,4 +1,4 @@
-# Sabbir95 Android Build Guide
+# Planet Tv Android Build Guide
 
 আপনার এই প্রজেক্টটিকে অ্যান্ড্রয়েড অ্যাপ (APK) হিসেবে তৈরি করার জন্য নিচের ধাপগুলো অনুসরণ করুন:
 
@@ -53,4 +53,4 @@ android:usesCleartextTraffic="true"
 এটি না করলে অ্যান্ড্রয়েড অ্যাপে HTTP চ্যানেলগুলো চলবে না।
 
 ---
-**Sabbir95 - Premium Live TV App**
+**Planet Tv - Premium Live TV App**

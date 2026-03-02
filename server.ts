@@ -5,6 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import http from "http";
 import https from "https";
+import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,6 +20,105 @@ const httpsAgent = new https.Agent({
 async function startServer() {
   const app = express();
   const PORT = 3000;
+
+  // Middleware for parsing JSON bodies
+  app.use(express.json());
+
+  // --- Channel Management API ---
+  const channelsFilePath = path.join(__dirname, 'public', 'channels.json');
+
+  // Helper to read channels
+  const readChannels = () => {
+    try {
+      if (!fs.existsSync(channelsFilePath)) {
+        console.log("Channels file not found, returning empty array");
+        return [];
+      }
+      const data = fs.readFileSync(channelsFilePath, 'utf-8');
+      return JSON.parse(data);
+    } catch (e) {
+      console.error("Error reading channels:", e);
+      return [];
+    }
+  };
+
+  // Helper to write channels
+  const writeChannels = (channels: any[]) => {
+    try {
+      const dir = path.dirname(channelsFilePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(channelsFilePath, JSON.stringify(channels, null, 2));
+      console.log("Channels saved successfully");
+      return true;
+    } catch (e) {
+      console.error("Error writing channels:", e);
+      return false;
+    }
+  };
+
+  // GET all channels
+  app.get("/api/channels", (req, res) => {
+    console.log("GET /api/channels");
+    const channels = readChannels();
+    res.json(channels);
+  });
+
+  // POST (Add) a channel
+  app.post("/api/channels", (req, res) => {
+    console.log("POST /api/channels", req.body);
+    const newChannel = req.body;
+    if (!newChannel.id || !newChannel.name) {
+      return res.status(400).json({ error: "ID and Name are required" });
+    }
+    const channels = readChannels();
+    if (channels.find((c: any) => c.id === newChannel.id)) {
+      return res.status(400).json({ error: "Channel ID already exists" });
+    }
+    channels.push(newChannel);
+    if (writeChannels(channels)) {
+      res.json(newChannel);
+    } else {
+      res.status(500).json({ error: "Failed to save channel" });
+    }
+  });
+
+  // PUT (Update) a channel
+  app.put("/api/channels/:id", (req, res) => {
+    const { id } = req.params;
+    const updatedChannel = req.body;
+    const channels = readChannels();
+    const index = channels.findIndex((c: any) => c.id === id);
+    
+    if (index === -1) {
+      return res.status(404).json({ error: "Channel not found" });
+    }
+
+    channels[index] = { ...channels[index], ...updatedChannel };
+    if (writeChannels(channels)) {
+      res.json(channels[index]);
+    } else {
+      res.status(500).json({ error: "Failed to update channel" });
+    }
+  });
+
+  // DELETE a channel
+  app.delete("/api/channels/:id", (req, res) => {
+    const { id } = req.params;
+    const channels = readChannels();
+    const newChannels = channels.filter((c: any) => c.id !== id);
+    
+    if (channels.length === newChannels.length) {
+      return res.status(404).json({ error: "Channel not found" });
+    }
+
+    if (writeChannels(newChannels)) {
+      res.json({ success: true });
+    } else {
+      res.status(500).json({ error: "Failed to delete channel" });
+    }
+  });
 
   // Proxy endpoint to handle HTTP streams in HTTPS environment
   app.get("/api/proxy", async (req, res) => {
