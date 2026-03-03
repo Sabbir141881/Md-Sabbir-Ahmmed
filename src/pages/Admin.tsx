@@ -41,12 +41,39 @@ export default function Admin() {
   const fetchChannels = async () => {
     setIsLoading(true);
     try {
+      // Try API first
       const res = await fetch('/api/channels');
-      if (!res.ok) throw new Error('Failed to fetch channels');
-      const data = await res.json();
-      setChannels(data);
+      
+      // Check if response is JSON (Vercel returns HTML on 404)
+      const contentType = res.headers.get("content-type");
+      if (res.ok && contentType && contentType.includes("application/json")) {
+        const data = await res.json();
+        setChannels(data);
+      } else {
+        // Fallback: Fetch static JSON if API fails (e.g. Vercel)
+        console.warn("API not available, falling back to static file + local storage");
+        const staticRes = await fetch('/channels.json');
+        let staticData = [];
+        if (staticRes.ok) {
+           staticData = await staticRes.json();
+        }
+        
+        // Merge with LocalStorage for client-side persistence demo
+        const localData = localStorage.getItem('planet_tv_channels');
+        if (localData) {
+          const localChannels = JSON.parse(localData);
+          // Simple merge: Local overrides static by ID, or appends
+          const channelMap = new Map();
+          staticData.forEach((c: Channel) => channelMap.set(c.id, c));
+          localChannels.forEach((c: Channel) => channelMap.set(c.id, c));
+          setChannels(Array.from(channelMap.values()));
+        } else {
+          setChannels(staticData);
+        }
+      }
     } catch (err: any) {
-      setError(err.message);
+      console.error("Fetch error:", err);
+      setError("Failed to load channels. Please check your connection.");
     } finally {
       setIsLoading(false);
     }
@@ -84,19 +111,45 @@ export default function Admin() {
       const payload = {
         ...formData,
         id: channelId
-      };
+      } as Channel;
 
       console.log("Sending payload:", payload); // Debug log
 
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+      // Try API Save
+      let success = false;
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        const contentType = res.headers.get("content-type");
+        if (res.ok && contentType && contentType.includes("application/json")) {
+           success = true;
+        }
+      } catch (e) {
+        console.warn("API save failed, falling back to local storage");
+      }
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || 'Failed to save channel');
+      if (!success) {
+        // Fallback: Save to LocalStorage
+        const localData = localStorage.getItem('planet_tv_channels');
+        let localChannels: Channel[] = localData ? JSON.parse(localData) : [];
+        
+        if (editingChannel) {
+          const index = localChannels.findIndex(c => c.id === editingChannel.id);
+          if (index !== -1) {
+            localChannels[index] = payload;
+          } else {
+            localChannels.push(payload); // Treat as new if not found locally
+          }
+        } else {
+          localChannels.push(payload);
+        }
+        
+        localStorage.setItem('planet_tv_channels', JSON.stringify(localChannels));
+        alert("Note: Changes saved locally (Client-Side) because API is unavailable.");
       }
 
       await fetchChannels();
@@ -115,8 +168,25 @@ export default function Admin() {
     
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/channels/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Failed to delete channel');
+      let success = false;
+      try {
+        const res = await fetch(`/api/channels/${id}`, { method: 'DELETE' });
+        if (res.ok) success = true;
+      } catch (e) {
+        console.warn("API delete failed");
+      }
+
+      if (!success) {
+         // Fallback: Delete from LocalStorage
+         const localData = localStorage.getItem('planet_tv_channels');
+         if (localData) {
+           let localChannels = JSON.parse(localData);
+           localChannels = localChannels.filter((c: Channel) => c.id !== id);
+           localStorage.setItem('planet_tv_channels', JSON.stringify(localChannels));
+           alert("Note: Channel removed locally.");
+         }
+      }
+
       await fetchChannels();
     } catch (err: any) {
       setError(err.message);

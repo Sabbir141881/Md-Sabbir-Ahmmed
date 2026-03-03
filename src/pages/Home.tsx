@@ -369,10 +369,37 @@ export default function Home() {
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetch('/channels.json')
-      .then(res => res.json())
-      .then(data => setChannels(data))
-      .catch(err => console.error("Failed to load channels:", err));
+    const loadChannels = async () => {
+      let allChannels: Channel[] = [];
+      
+      // 1. Fetch static channels
+      try {
+        const res = await fetch('/channels.json');
+        if (res.ok) {
+          allChannels = await res.json();
+        }
+      } catch (err) {
+        console.error("Failed to load base channels:", err);
+      }
+
+      // 2. Merge with LocalStorage (Client-side overrides for Vercel/Demo)
+      try {
+        const localData = localStorage.getItem('planet_tv_channels');
+        if (localData) {
+          const localChannels = JSON.parse(localData);
+          const channelMap = new Map();
+          allChannels.forEach(c => channelMap.set(c.id, c));
+          localChannels.forEach((c: Channel) => channelMap.set(c.id, c));
+          allChannels = Array.from(channelMap.values());
+        }
+      } catch (e) {
+        console.error("LocalStorage error", e);
+      }
+
+      setChannels(allChannels);
+    };
+
+    loadChannels();
   }, []);
 
   const filteredChannels = activeCategory === 'All' 
