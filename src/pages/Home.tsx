@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Play, 
   Pause,
@@ -10,7 +11,8 @@ import {
   Volume2,
   VolumeX,
   Trophy,
-  Settings
+  Settings,
+  X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
@@ -33,7 +35,7 @@ const CATEGORIES: Category[] = ['All', 'Sports', 'Bangla', 'Kids', 'Indian Bangl
 // --- HLS Player Component ---
 import Hls from 'hls.js';
 
-function VideoPlayer({ url, channelName }: { url: string, channelName: string }) {
+function VideoPlayer({ url, channelName, isMiniPlayer }: { url: string, channelName: string, isMiniPlayer?: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
@@ -151,10 +153,10 @@ function VideoPlayer({ url, channelName }: { url: string, channelName: string })
         hls = new Hls({
           enableWorker: true,
           lowLatencyMode: false, // Disabled for stability
-          backBufferLength: 120, // 2 minutes back buffer
-          maxBufferLength: 120, // 2 minutes buffer
-          maxMaxBufferLength: 240, // 4 minutes max buffer
-          maxBufferSize: 200 * 1000 * 1000, // 200MB buffer size
+          backBufferLength: 300, // 5 minutes back buffer
+          maxBufferLength: 300, // 5 minutes buffer
+          maxMaxBufferLength: 600, // 10 minutes max buffer
+          maxBufferSize: 500 * 1000 * 1000, // 500MB buffer size
           liveSyncDuration: 30, // 30s delay for stability
           liveMaxLatencyDuration: 60, // Allow up to 60s latency
           // MANDATORY FIX 4: Robust retry strategy
@@ -464,7 +466,25 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState<Category>('All');
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
   const [channels, setChannels] = useState<Channel[]>([]);
+  const [isMiniPlayer, setIsMiniPlayer] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const topRef = useRef<HTMLDivElement>(null);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (selectedChannel) {
+        // Simple scroll threshold: if scrolled down more than 100px, trigger mini-player
+        const shouldBeMini = window.scrollY > 100;
+        setIsMiniPlayer(shouldBeMini);
+      } else {
+        setIsMiniPlayer(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [selectedChannel]);
 
   useEffect(() => {
     const loadChannels = async () => {
@@ -553,12 +573,51 @@ export default function Home() {
       <div className="relative z-10 flex flex-col lg:flex-row min-h-screen lg:h-screen pt-20 p-4 lg:p-6 gap-4 lg:gap-6">
         
         {/* Left Section: Video Player */}
-        <div className="w-full lg:flex-1 flex flex-col gap-4 lg:gap-6 min-h-0 shrink-0">
-          <div className="w-full aspect-video lg:aspect-auto lg:flex-1 bg-white/[0.03] backdrop-blur-2xl rounded-3xl lg:rounded-[40px] border border-white/10 overflow-hidden relative group shadow-2xl">
+        <div ref={videoContainerRef} className="w-full lg:flex-1 flex flex-col gap-4 lg:gap-6 min-h-0 shrink-0 relative">
+          {/* Placeholder to prevent layout shift when video becomes fixed */}
+          <div className={`w-full aspect-video lg:aspect-auto lg:flex-1 rounded-3xl lg:rounded-[40px] transition-all duration-300 ${isMiniPlayer ? 'opacity-100 bg-white/5 border border-white/5' : 'opacity-0 h-0 lg:h-auto hidden'}`} />
+
+          {/* Video Player Container */}
+          <motion.div 
+            layout
+            drag={isMiniPlayer}
+            dragMomentum={false}
+            whileDrag={{ scale: 1.05, cursor: 'grabbing' }}
+            onDragStart={() => setIsDragging(true)}
+            onDragEnd={() => setTimeout(() => setIsDragging(false), 100)}
+            onClick={() => {
+              if (isMiniPlayer && !isDragging) {
+                setIsMiniPlayer(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            style={{ x: isMiniPlayer ? undefined : 0, y: isMiniPlayer ? undefined : 0 }}
+            className={`
+              bg-white/[0.03] backdrop-blur-2xl border border-white/10 overflow-hidden relative group shadow-2xl transition-all duration-500 ease-in-out
+              ${isMiniPlayer 
+                ? 'fixed bottom-4 right-4 w-[220px] sm:w-[320px] aspect-video z-[9999] rounded-xl shadow-[0_0_30px_rgba(0,0,0,0.5)] ring-1 ring-white/10 cursor-grab hover:scale-105' 
+                : 'w-full aspect-video lg:aspect-auto lg:flex-1 rounded-3xl lg:rounded-[40px]'
+              }
+            `}
+          >
+            {/* Close Mini Player Button */}
+            {isMiniPlayer && (
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedChannel(null);
+                  setIsMiniPlayer(false);
+                }}
+                className="absolute top-1 right-1 z-[110] bg-black/60 text-white p-1 rounded-full hover:bg-black/80 backdrop-blur-sm transition-colors"
+              >
+                <X size={14} />
+              </button>
+            )}
+
             {selectedChannel ? (
               <div className="w-full h-full flex flex-col items-center justify-center bg-black">
                 {selectedChannel.streamUrl ? (
-                  <VideoPlayer url={selectedChannel.streamUrl} channelName={selectedChannel.name} />
+                  <VideoPlayer url={selectedChannel.streamUrl} channelName={selectedChannel.name} isMiniPlayer={isMiniPlayer} />
                 ) : (
                   <div className="relative w-full h-full">
                     <img 
@@ -625,7 +684,7 @@ export default function Home() {
                 </motion.div>
               </div>
             )}
-          </div>
+          </motion.div>
         </div>
 
         {/* Right Section: Sidebar */}

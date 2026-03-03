@@ -151,22 +151,9 @@
     "name": "T Sports", 
     "logo": "https://tvassets.roarzone.info/images/102.png", 
     "category": "Sports",
-    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/tsports/index.m3u8?token=cd4dd469d6b025fc66c318d889aa8b98ba5fd812-caa0c06d2e9895f1f9a2edbd5b520f42-1772545135-1772541535"
+    "streamUrl": "http://103.112.62.174:8080/T_sportsby_visioniptvsource/index.m3u8"
   },
-  { 
-    "id": "starsports1", 
-    "name": "Star Sports 1", 
-    "logo": "https://tvassets.roarzone.info/images/25.png", 
-    "category": "Sports",
-    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/star-sports-1/index.m3u8?token=0fc3252581e8c2eb4ef122980634b5063f37a04e-89f00cb2974a8c5d27563b00a459e33d-1772545135-1772541535"
-  },
-  { 
-    "id": "starsports2", 
-    "name": "Star Sports 2", 
-    "logo": "https://tvassets.roarzone.info/images/26.png", 
-    "category": "Sports",
-    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/star-sports-2/index.m3u8?token=2cc2afcb8ff407f4d07c3febf1ef32331d2f5099-5c81026842d3078da8599d3604b780e6-1772545135-1772541535"
-  },
+
   { 
     "id": "gazitv", 
     "name": "Gazi TV", 
@@ -174,20 +161,7 @@
     "category": "Sports",
     "streamUrl": "http://tvn2.chowdhury-shaheb.com/gazitv/index.m3u8"
   },
-  { 
-    "id": "ptvsports", 
-    "name": "PTV Sports", 
-    "logo": "https://tvassets.roarzone.info/images/73.png", 
-    "category": "Sports",
-    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/ptv-sports/index.m3u8?token=0d1b0c44eca16f2f984949129dc2a5d74b512d34-bd475c2f6e5836b93a04ea0c8e1b9581-1772545135-1772541535"
-  },
-  { 
-    "id": "asports", 
-    "name": "A Sports", 
-    "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/8/87/A_Sports_logo.png/250px-A_Sports_logo.png", 
-    "category": "Sports",
-    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/a-sports/index.m3u8?token=9d3265f614f16769de54c4d097d6039fc08ae336-7790809d555cbd0b9400f986943c993a-1772545135-1772541535"
-  },
+
   { 
     "id": "fifatv", 
     "name": "FIFA TV", 
@@ -195,13 +169,7 @@
     "category": "Sports",
     "streamUrl": "https://c822c659.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/U2Ftc3VuZy1pbl9GSUZBUGx1c0VuZ2xpc2hfSExT/playlist.m3u8"
   },
-  { 
-    "id": "football", 
-    "name": "Foot Ball", 
-    "logo": "", 
-    "category": "Sports",
-    "streamUrl": "https://stream1.liveland.af/hls/tv/solh-sports/playlist.m3u8"
-  },
+
   { 
     "id": "cricketold", 
     "name": "Cricket Old", 
@@ -223,13 +191,7 @@
     "category": "Sports",
     "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge3/sony-ten-cricket/index.m3u8?token=2795ff83dad75e4971d128d93da2abb49dcd2e0f-e2166ee05415fac49fb173812cc00440-1772371109-1772367509"
   },
-  { 
-    "id": "willowtv", 
-    "name": "Willow TV", 
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Willow_TV_logo.svg/1200px-Willow_TV_logo.svg.png", 
-    "category": "Sports",
-    "streamUrl": "http://198.195.239.50:8095/WiLLow/index.m3u8"
-  },
+
   { 
     "id": "junglebook", 
     "name": "Jungle Book", 
@@ -258,32 +220,68 @@
     "category": "Movies",
     "streamUrl": "https://live20.bozztv.com/giatvplayout7/giatv-209593/tracks-v1a1/mono.ts.m3u8"
   },
+
   {
-    "id": "sonyten1",
-    "name": "Sony Ten 1",
-    "logo": "https://tvassets.roarzone.info/images/29.png",
-    "category": "Sports",
-    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/sony-sports-1-hd/index.m3u8?token=f0ffd3e2907de7eb5a1e9a54be87c34e305a1aa1-7731a2f3d331d929708b4065079c199c-1772545135-1772541535"
+    "id": "qurantv",
+    "name": "QURAN TV",
+    "logo": "https://e7.pngegg.com/pngimages/407/223/png-clipart-quran-mecca-television-channel-television-show-the-holy-quran-miscellaneous-television.png",
+    "category": "Islamic",
+    "streamUrl": "https://live.kwikmotion.com/sharjahtvquranlive/shqurantv.smil/playlist.m3u8"
   },
   {
-    "id": "sonyten2",
-    "name": "Sony Ten 2",
-    "logo": "https://tvassets.roarzone.info/images/30.png",
-    "category": "Sports",
-    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/sony-sports-2-hd/index.m3u8?token=3dff31df862085a02196903eef13b27bb47d1639-bccb41016f68169072726b15ff0a5645-1772545135-1772541535"
+    "id": "waztv",
+    "name": "WAZ TV",
+    "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTac9Sb94wTWnSqTakCWhjrwJKEnudAfl337w&s",
+    "category": "Islamic",
+    "streamUrl": "https://tplay.live/originals/ilm-tv/index.m3u8"
   },
   {
-    "id": "sonyten3",
-    "name": "Sony Ten 3",
+    "id": "azantv",
+    "name": "AZAN TV",
+    "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPU_idVchUr-IGT6csSe94IJYOYZafaEr4Dg&s",
+    "category": "Islamic",
+    "streamUrl": "https://dbcanada.sonarbanglatv.com/azantv/atv/index.m3u8"
+  },
+  {
+    "id": "ekhon",
+    "name": "Ekhon",
+    "logo": "https://tvassets.roarzone.info/images/ekhon-tv.jpg",
+    "category": "Bangla",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge3/ekhon-tv/index.m3u8?token=6fc43d1695ca52a53c716857b6208a4f6b4707e5-a806aed0c06a8aa96f34f26da13f2a55-1772545136-1772541536"
+  },
+  {
+    "id": "realmadrid",
+    "name": "Real Madrid FC",
+    "logo": "https://images.seeklogo.com/logo-png/11/2/real-madrid-c-f-logo-png_seeklogo-116415.png",
+    "category": "Sports",
+    "streamUrl": "https://rmtv.akamaized.net/hls/live/2043154/rmtv-en-web/bitrate_3.m3u8"
+  },
+  {
+    "id": "starjalshamovies",
+    "name": "Star Jalsha Movies",
     "logo": "https://tvassets.roarzone.info/images/31.png",
-    "category": "Sports",
-    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/sony-sports-3-hd/index.m3u8?token=91282a0de2bcb45965b1366b58967acf7a56efb3-52e5a5fabd580f9b14b2fe0b520ee824-1772545135-1772541535"
+    "category": "Indian Bangla",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/jalsha-movies/index.m3u8?token=829c8ea82f543a753d378816d923e5c803fcf502-2c296c3070931cc3d0357456721ac197-1772545136-1772541536"
   },
   {
-    "id": "sonysix",
-    "name": "Sony Six",
-    "logo": "https://tvassets.roarzone.info/images/33.png",
-    "category": "Sports",
-    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/sony-sports-5-hd/index.m3u8?token=dbb135b517205e1eda2fc2ad230a6bb66f5f8cd2-3317247c7ff181604c176fe21230e96c-1772545135-1772541535"
+    "id": "anandatv",
+    "name": "Ananda Tv",
+    "logo": "https://tvassets.roarzone.info/images/16.png",
+    "category": "Bangla",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge3/ananda-tv/index.m3u8?token=c46899f3fe7a53d7d5d3eccc2aede3c23ab2bed5-a5d2ef49a0b53aff8019eca397bf07ba-1772545136-1772541536"
+  },
+  {
+    "id": "bijoytv",
+    "name": "Bijoy-Tv",
+    "logo": "https://tvassets.roarzone.info/images/bijoy-tv.jpg",
+    "category": "Bangla",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge3/bijoy-tv/index.m3u8?token=cfb6947bf6e7aff05e10a37ba1c4c7377dbaab54-60bf3c523f5e8948db1de5e5787f5114-1772545136-1772541536"
+  },
+  {
+    "id": "banglatv",
+    "name": "Bangla Tv",
+    "logo": "https://tvassets.roarzone.info/images/19.png",
+    "category": "Bangla",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge3/bangla-tv/index.m3u8?token=3d360310df3df543fafd4be317af1b6c38d4c05f-580fcc19cdab651074e09242c93770dd-1772545136-1772541536"
   }
 ]

@@ -153,7 +153,7 @@ async function startServer() {
       };
 
       // Special handling for the 198.x IPTV server (PTV, Willow, T Sports)
-      if (targetUrl.includes("198.195.239.50")) {
+      if (targetUrl.includes("198.195.239.50") || targetUrl.includes("103.112.62.174")) {
         headers = {
           "User-Agent": "VLC/3.0.20 LibVLC/3.0.20",
           "Connection": "keep-alive",
