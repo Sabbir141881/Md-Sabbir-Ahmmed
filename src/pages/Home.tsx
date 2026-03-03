@@ -97,13 +97,13 @@ function VideoPlayer({ url, channelName }: { url: string, channelName: string })
       if (Hls.isSupported()) {
         hls = new Hls({
           enableWorker: true,
-          lowLatencyMode: false,
+          lowLatencyMode: false, // Disabled for stability
           backBufferLength: 90,
-          maxBufferLength: 30, // Reset to safer defaults
-          maxMaxBufferLength: 60,
-          maxBufferSize: 60 * 1000 * 1000,
-          liveSyncDuration: 10,
-          liveMaxLatencyDuration: 20,
+          maxBufferLength: 60, // Increased buffer
+          maxMaxBufferLength: 120, // Increased max buffer
+          maxBufferSize: 100 * 1000 * 1000, // 100MB
+          liveSyncDuration: 15, // Increased sync duration
+          liveMaxLatencyDuration: 40, // Allow more latency for buffering
           // MANDATORY FIX 4: Robust retry strategy
           manifestLoadingMaxRetry: 10,
           manifestLoadingRetryDelay: 1000,
@@ -465,13 +465,9 @@ export default function Home() {
                   transition={{ duration: 0.8, ease: "easeOut" }}
                   className="space-y-4 lg:space-y-6 w-full max-w-2xl mx-auto"
                 >
-                  {/* Title Section - Smaller as requested */}
-                  <div className="space-y-2">
-                    <h1 className="text-2xl lg:text-4xl font-display tracking-wide uppercase leading-[0.9] opacity-80">
-                      Welcome to <br />
-                      <span className="text-transparent bg-clip-text bg-gradient-to-b from-green-400 to-green-600 transform inline-block">Planet TV</span>
-                    </h1>
-                    <p className="text-white/30 font-mono tracking-[0.2em] uppercase text-[10px]">Select a channel to start watching</p>
+                  {/* Title Section */}
+                  <div className="space-y-4">
+                    <p className="text-white/50 font-mono tracking-[0.3em] uppercase text-[10px] lg:text-xs font-bold">Select a channel to start watching</p>
                   </div>
                   
                   {/* Info Grid - Merged from Bottom Bar */}
@@ -493,7 +489,7 @@ export default function Home() {
 
                     {/* Developer Info */}
                     <div className="flex flex-col items-center justify-center text-center">
-                      <p className="text-[8px] lg:text-[9px] font-bold text-white/40 uppercase tracking-widest mb-1">Make By</p>
+                      <p className="text-[8px] lg:text-[9px] font-bold text-white/40 uppercase tracking-widest mb-1">DEVELOPER BY</p>
                       <p className="text-xs lg:text-sm font-black text-yellow-400 uppercase italic tracking-tighter">MD SABBIR AHMMED</p>
                     </div>
                   </div>

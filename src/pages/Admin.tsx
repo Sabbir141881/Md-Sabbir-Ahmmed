@@ -75,10 +75,18 @@ export default function Admin() {
       const method = editingChannel ? 'PUT' : 'POST';
       
       // Auto-generate ID if new
+      let channelId = formData.id;
+      if (!channelId) {
+        const baseId = formData.name?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'channel';
+        channelId = `${baseId}-${Date.now()}`; // Ensure uniqueness
+      }
+
       const payload = {
         ...formData,
-        id: formData.id || formData.name?.toLowerCase().replace(/[^a-z0-9]/g, '')
+        id: channelId
       };
+
+      console.log("Sending payload:", payload); // Debug log
 
       const res = await fetch(url, {
         method,
