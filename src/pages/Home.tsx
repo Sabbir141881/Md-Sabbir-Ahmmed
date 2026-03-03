@@ -492,7 +492,7 @@ export default function Home() {
       
       // 1. Fetch static channels
       try {
-        const res = await fetch('/channels.json');
+        const res = await fetch(`/channels.json?t=${new Date().getTime()}`);
         if (res.ok) {
           allChannels = await res.json();
         }
