@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Play, 
+  Pause,
   Tv, 
   Search, 
   ChevronRight,
   Maximize2,
+  Minimize2,
   Volume2,
+  VolumeX,
   Trophy,
   Settings
 } from 'lucide-react';
@@ -32,6 +35,7 @@ import Hls from 'hls.js';
 
 function VideoPlayer({ url, channelName }: { url: string, channelName: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState(false);
   const [levels, setLevels] = useState<{ index: number, height: number, bitrate: number }[]>([]);
@@ -40,6 +44,10 @@ function VideoPlayer({ url, channelName }: { url: string, channelName: string })
   const [isLoading, setIsLoading] = useState(true);
   const [showIndicator, setShowIndicator] = useState(true);
   const [showControls, setShowControls] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hlsRef = useRef<Hls | null>(null);
 
@@ -70,6 +78,47 @@ function VideoPlayer({ url, channelName }: { url: string, channelName: string })
   }, [showQualityMenu]);
 
   useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const togglePlay = () => {
+    if (videoRef.current) {
+      if (videoRef.current.paused) {
+        videoRef.current.play();
+        setIsPlaying(true);
+      } else {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      }
+    }
+  };
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
+    }
+  };
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      containerRef.current?.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+        // Fallback for iOS/Mobile if container fullscreen fails
+        if (videoRef.current && videoRef.current.webkitEnterFullscreen) {
+           videoRef.current.webkitEnterFullscreen();
+        }
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
+  useEffect(() => {
     let hls: Hls | null = null;
     setError(null);
     setShowHelp(false);
@@ -77,6 +126,7 @@ function VideoPlayer({ url, channelName }: { url: string, channelName: string })
     setCurrentLevel(-1);
     setIsLoading(true);
     setShowIndicator(true);
+    setIsPlaying(true);
 
     if (videoRef.current) {
       const video = videoRef.current;
@@ -85,25 +135,28 @@ function VideoPlayer({ url, channelName }: { url: string, channelName: string })
       const handleWaiting = () => setIsLoading(true);
       const handlePlaying = () => {
         setIsLoading(false);
+        setIsPlaying(true);
         // Hide indicator after 5 seconds of playing
         setTimeout(() => setShowIndicator(false), 5000);
       };
+      const handlePause = () => setIsPlaying(false);
       const handleCanPlay = () => setIsLoading(false);
 
       video.addEventListener('waiting', handleWaiting);
       video.addEventListener('playing', handlePlaying);
+      video.addEventListener('pause', handlePause);
       video.addEventListener('canplay', handleCanPlay);
 
       if (Hls.isSupported()) {
         hls = new Hls({
           enableWorker: true,
           lowLatencyMode: false, // Disabled for stability
-          backBufferLength: 90,
-          maxBufferLength: 60, // Increased buffer
-          maxMaxBufferLength: 120, // Increased max buffer
-          maxBufferSize: 100 * 1000 * 1000, // 100MB
-          liveSyncDuration: 15, // Increased sync duration
-          liveMaxLatencyDuration: 40, // Allow more latency for buffering
+          backBufferLength: 120, // 2 minutes back buffer
+          maxBufferLength: 120, // 2 minutes buffer
+          maxMaxBufferLength: 240, // 4 minutes max buffer
+          maxBufferSize: 200 * 1000 * 1000, // 200MB buffer size
+          liveSyncDuration: 30, // 30s delay for stability
+          liveMaxLatencyDuration: 60, // Allow up to 60s latency
           // MANDATORY FIX 4: Robust retry strategy
           manifestLoadingMaxRetry: 10,
           manifestLoadingRetryDelay: 1000,
@@ -191,6 +244,7 @@ function VideoPlayer({ url, channelName }: { url: string, channelName: string })
       return () => {
         video.removeEventListener('waiting', handleWaiting);
         video.removeEventListener('playing', handlePlaying);
+        video.removeEventListener('pause', handlePause);
         video.removeEventListener('canplay', handleCanPlay);
         if (hls) {
           hls.destroy();
@@ -217,6 +271,7 @@ function VideoPlayer({ url, channelName }: { url: string, channelName: string })
 
   return (
     <div 
+      ref={containerRef}
       className="w-full h-full bg-black relative flex items-center justify-center overflow-hidden rounded-2xl border border-white/5 group"
       onMouseMove={handleInteraction}
       onTouchStart={handleInteraction}
@@ -270,14 +325,24 @@ function VideoPlayer({ url, channelName }: { url: string, channelName: string })
           <video 
             ref={videoRef} 
             className="w-full h-full object-contain" 
-            controls 
+            // controls removed to support custom overlay in fullscreen
             autoPlay 
             playsInline
+            onClick={togglePlay}
           />
+
+          {/* Custom Logo Overlay - Top Left */}
+          <div className="absolute top-4 left-4 z-30 pointer-events-none select-none">
+            <img 
+              src="https://i.postimg.cc/T20dxZFZ/1000049192-removebg-preview.png" 
+              alt="Status Arbin Logo" 
+              className="h-12 md:h-16 object-contain drop-shadow-lg"
+            />
+          </div>
 
           {/* Loading Overlay */}
           {isLoading && !error && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm z-40">
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm z-40 pointer-events-none">
               <div className="w-16 h-16 border-4 border-yellow-400/20 border-t-yellow-400 rounded-full animate-spin mb-6" />
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -290,71 +355,104 @@ function VideoPlayer({ url, channelName }: { url: string, channelName: string })
             </div>
           )}
           
-          {/* Quality Selector */}
-          {levels.length > 0 && (
-            <motion.div 
-              initial={{ opacity: 1 }}
-              animate={{ opacity: (showControls || showQualityMenu) ? 1 : 0 }}
-              transition={{ duration: 0.3 }}
-              className="absolute bottom-16 right-4 z-50"
-            >
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowQualityMenu(!showQualityMenu);
-                }}
-                className="bg-black/60 backdrop-blur-md p-2 rounded-full border border-white/10 text-white hover:bg-white/20 transition-all"
-                title="Quality Settings"
-              >
-                <Settings className="w-5 h-5" />
-              </button>
+          {/* Custom Controls Bar */}
+          <div className={`absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/50 to-transparent transition-opacity duration-300 z-50 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
+            <div className="flex items-center justify-between gap-4">
+               {/* Left Controls */}
+               <div className="flex items-center gap-4">
+                 <button 
+                   onClick={(e) => { e.stopPropagation(); togglePlay(); }}
+                   className="p-2 rounded-full hover:bg-white/20 text-white transition-colors"
+                 >
+                   {isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current" />}
+                 </button>
+                 
+                 <button 
+                   onClick={(e) => { e.stopPropagation(); toggleMute(); }}
+                   className="p-2 rounded-full hover:bg-white/20 text-white transition-colors group/vol"
+                 >
+                   {isMuted ? <VolumeX className="w-6 h-6" /> : <Volume2 className="w-6 h-6" />}
+                 </button>
+                 
+                 {/* Live Indicator inside controls for mobile */}
+                 <div className="flex items-center gap-2 px-3 py-1 bg-red-500/20 border border-red-500/30 rounded-full">
+                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-red-500">LIVE</span>
+                 </div>
+               </div>
 
-              <AnimatePresence>
-                {showQualityMenu && (
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                    className="absolute bottom-full right-0 mb-2 w-40 bg-black/90 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl"
-                  >
-                    <div className="p-2 border-bottom border-white/5 bg-white/5">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Quality</span>
-                    </div>
-                    <div className="max-h-48 overflow-y-auto">
+               {/* Right Controls */}
+               <div className="flex items-center gap-4">
+                 {/* Quality Button */}
+                 {levels.length > 0 && (
+                   <div className="relative">
                       <button 
-                        onClick={() => changeQuality(-1)}
-                        className={`w-full px-4 py-2 text-left text-xs font-bold transition-colors hover:bg-white/10 flex justify-between items-center ${currentLevel === -1 ? 'text-amber-500 bg-white/5' : 'text-gray-300'}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowQualityMenu(!showQualityMenu);
+                        }}
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 border border-white/10 text-white hover:bg-white/20 transition-all text-xs font-bold"
                       >
-                        <span>Auto</span>
-                        <span className="text-[9px] opacity-60">Recommended</span>
+                        <Settings className="w-4 h-4" />
+                        <span className="hidden sm:inline">{currentLevel === -1 ? 'Auto' : `${levels[currentLevel]?.height}p`}</span>
                       </button>
-                      {levels.map((level) => (
-                        <button 
-                          key={level.index}
-                          onClick={() => changeQuality(level.index)}
-                          className={`w-full px-4 py-2 text-left text-xs font-bold transition-colors hover:bg-white/10 flex justify-between items-center ${currentLevel === level.index ? 'text-amber-500 bg-white/5' : 'text-gray-300'}`}
-                        >
-                          <span>{level.height}p</span>
-                          <span className="text-[9px] opacity-60">{getQualityLabel(level.height)}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          )}
+
+                      <AnimatePresence>
+                        {showQualityMenu && (
+                          <motion.div 
+                            initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                            className="absolute bottom-full right-0 mb-4 w-40 bg-black/95 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl"
+                          >
+                            <div className="p-3 border-b border-white/10 bg-white/5">
+                              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Quality</span>
+                            </div>
+                            <div className="max-h-48 overflow-y-auto custom-scrollbar">
+                              <button 
+                                onClick={() => changeQuality(-1)}
+                                className={`w-full px-4 py-3 text-left text-xs font-bold transition-colors hover:bg-white/10 flex justify-between items-center ${currentLevel === -1 ? 'text-amber-500 bg-white/5' : 'text-gray-300'}`}
+                              >
+                                <span>Auto</span>
+                                {currentLevel === -1 && <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />}
+                              </button>
+                              {levels.map((level) => (
+                                <button 
+                                  key={level.index}
+                                  onClick={() => changeQuality(level.index)}
+                                  className={`w-full px-4 py-3 text-left text-xs font-bold transition-colors hover:bg-white/10 flex justify-between items-center ${currentLevel === level.index ? 'text-amber-500 bg-white/5' : 'text-gray-300'}`}
+                                >
+                                  <span>{level.height}p</span>
+                                  {currentLevel === level.index && <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />}
+                                </button>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                   </div>
+                 )}
+
+                 <button 
+                   onClick={(e) => { e.stopPropagation(); toggleFullscreen(); }}
+                   className="p-2 rounded-full hover:bg-white/20 text-white transition-colors"
+                 >
+                   {isFullscreen ? <Minimize2 className="w-6 h-6" /> : <Maximize2 className="w-6 h-6" />}
+                 </button>
+               </div>
+            </div>
+          </div>
         </>
       )}
       
+      {/* Top Right Channel Name Indicator */}
       <motion.div 
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: showIndicator ? 1 : 0, x: showIndicator ? 0 : -20 }}
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: showIndicator ? 1 : 0, x: showIndicator ? 0 : 20 }}
         transition={{ duration: 0.5 }}
-        className="absolute top-4 left-4 flex items-center gap-2 bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 pointer-events-none z-30"
+        className="absolute top-4 right-4 flex items-center gap-2 bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 pointer-events-none z-30"
       >
-        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-        <span className="text-xs font-black uppercase tracking-widest">{channelName} LIVE</span>
+        <span className="text-xs font-black uppercase tracking-widest text-white">{channelName}</span>
       </motion.div>
     </div>
   );
@@ -424,8 +522,12 @@ export default function Home() {
       {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-xl border-b border-white/5 h-16 flex items-center justify-between px-4 lg:px-6 shadow-2xl">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 lg:w-10 lg:h-10 bg-yellow-400 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(250,204,21,0.4)]">
-            <Tv size={18} className="text-black" />
+          <div className="w-10 h-10 lg:w-12 lg:h-12 bg-white/10 rounded-full flex items-center justify-center overflow-hidden border border-white/10 shadow-[0_0_15px_rgba(250,204,21,0.2)]">
+            <img 
+              src="https://i.postimg.cc/T20dxZFZ/1000049192-removebg-preview.png" 
+              alt="Planet TV Logo" 
+              className="w-full h-full object-cover"
+            />
           </div>
           <div>
             <h1 className="text-lg lg:text-xl font-black uppercase tracking-tighter leading-none">

@@ -139,24 +139,34 @@ async function startServer() {
       const agent = isHttps ? httpsAgent : httpAgent;
       const urlObj = new URL(targetUrl);
 
-      // Default headers (mimic Chrome) - Works for GTV and others
+      // Default headers (mimic latest Chrome) - Optimized for High Quality
       let headers: Record<string, string> = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
         "Connection": "keep-alive",
         "Accept": "*/*",
+        "Accept-Encoding": "identity", // Avoid double compression
         "Referer": urlObj.origin + "/",
-        "Origin": urlObj.origin
+        "Origin": urlObj.origin,
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "cross-site",
       };
 
       // Special handling for the 198.x IPTV server (PTV, Willow, T Sports)
-      // These servers often reject browser headers or self-referers.
-      // We mimic VLC Media Player which usually works for these raw IPTV streams.
       if (targetUrl.includes("198.195.239.50")) {
         headers = {
-          "User-Agent": "VLC/3.0.18 LibVLC/3.0.18",
+          "User-Agent": "VLC/3.0.20 LibVLC/3.0.20",
           "Connection": "keep-alive",
           "Accept": "*/*"
         };
+      }
+      
+      // Special handling for roarzone (Sony, Star Sports)
+      if (targetUrl.includes("roarzone.info")) {
+         // Roarzone often works better with no referer or specific ones
+         // Keeping it standard usually works, but ensuring no cache is key
+         headers["Cache-Control"] = "no-cache";
+         headers["Pragma"] = "no-cache";
       }
 
       // MANDATORY FIX 6: Logging upstream requests
@@ -165,7 +175,7 @@ async function startServer() {
       const response = await fetch(targetUrl, {
         agent,
         headers,
-        timeout: 30000, // 30s timeout
+        timeout: 60000, // Increased to 60s for high-quality segments
         redirect: 'follow'
       });
 

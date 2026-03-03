@@ -151,21 +151,21 @@
     "name": "T Sports", 
     "logo": "https://tvassets.roarzone.info/images/102.png", 
     "category": "Sports",
-    "streamUrl": "http://198.195.239.50:8095/Tsports/tracks-v1a1/mono.m3u8"
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/tsports/index.m3u8?token=cd4dd469d6b025fc66c318d889aa8b98ba5fd812-caa0c06d2e9895f1f9a2edbd5b520f42-1772545135-1772541535"
   },
   { 
     "id": "starsports1", 
     "name": "Star Sports 1", 
     "logo": "https://tvassets.roarzone.info/images/25.png", 
     "category": "Sports",
-    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/star-sports-1/index.m3u8?token=d8aabeee2cb05cbc64401095d9e0f448ac5af548-886852e5ae022da5db6f9cb9faa84857-1772378241-1772374641"
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/star-sports-1/index.m3u8?token=0fc3252581e8c2eb4ef122980634b5063f37a04e-89f00cb2974a8c5d27563b00a459e33d-1772545135-1772541535"
   },
   { 
     "id": "starsports2", 
     "name": "Star Sports 2", 
     "logo": "https://tvassets.roarzone.info/images/26.png", 
     "category": "Sports",
-    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/star-sports-2/index.m3u8?token=78ee0af2212c49ffa7044db3ec39e5ad2b816c6e-ede6fc81fcd83abe94a6eaab94f7710c-1772378241-1772374641"
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/star-sports-2/index.m3u8?token=2cc2afcb8ff407f4d07c3febf1ef32331d2f5099-5c81026842d3078da8599d3604b780e6-1772545135-1772541535"
   },
   { 
     "id": "gazitv", 
@@ -179,14 +179,14 @@
     "name": "PTV Sports", 
     "logo": "https://tvassets.roarzone.info/images/73.png", 
     "category": "Sports",
-    "streamUrl": "http://198.195.239.50:8095/PTV/index.m3u8"
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/ptv-sports/index.m3u8?token=0d1b0c44eca16f2f984949129dc2a5d74b512d34-bd475c2f6e5836b93a04ea0c8e1b9581-1772545135-1772541535"
   },
   { 
     "id": "asports", 
     "name": "A Sports", 
     "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/8/87/A_Sports_logo.png/250px-A_Sports_logo.png", 
     "category": "Sports",
-    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/a-sports/index.m3u8?token=8c8a9d80b8ea87dea009c38655a9904ae419fe39-cb780de45a7f3b57b72a760f4e926549-1772378241-1772374641"
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/a-sports/index.m3u8?token=9d3265f614f16769de54c4d097d6039fc08ae336-7790809d555cbd0b9400f986943c993a-1772545135-1772541535"
   },
   { 
     "id": "fifatv", 
@@ -257,5 +257,33 @@
     "logo": "https://i.postimg.cc/Ss7ztrqN/file-00000000b74872099fa2bd560d3d30b8.png", 
     "category": "Movies",
     "streamUrl": "https://live20.bozztv.com/giatvplayout7/giatv-209593/tracks-v1a1/mono.ts.m3u8"
+  },
+  {
+    "id": "sonyten1",
+    "name": "Sony Ten 1",
+    "logo": "https://tvassets.roarzone.info/images/29.png",
+    "category": "Sports",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/sony-sports-1-hd/index.m3u8?token=f0ffd3e2907de7eb5a1e9a54be87c34e305a1aa1-7731a2f3d331d929708b4065079c199c-1772545135-1772541535"
+  },
+  {
+    "id": "sonyten2",
+    "name": "Sony Ten 2",
+    "logo": "https://tvassets.roarzone.info/images/30.png",
+    "category": "Sports",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/sony-sports-2-hd/index.m3u8?token=3dff31df862085a02196903eef13b27bb47d1639-bccb41016f68169072726b15ff0a5645-1772545135-1772541535"
+  },
+  {
+    "id": "sonyten3",
+    "name": "Sony Ten 3",
+    "logo": "https://tvassets.roarzone.info/images/31.png",
+    "category": "Sports",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/sony-sports-3-hd/index.m3u8?token=91282a0de2bcb45965b1366b58967acf7a56efb3-52e5a5fabd580f9b14b2fe0b520ee824-1772545135-1772541535"
+  },
+  {
+    "id": "sonysix",
+    "name": "Sony Six",
+    "logo": "https://tvassets.roarzone.info/images/33.png",
+    "category": "Sports",
+    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge2/sony-sports-5-hd/index.m3u8?token=dbb135b517205e1eda2fc2ad230a6bb66f5f8cd2-3317247c7ff181604c176fe21230e96c-1772545135-1772541535"
   }
 ]
