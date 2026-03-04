@@ -53,11 +53,11 @@ function VideoPlayer({ url, channelName, isMiniPlayer }: { url: string, channelN
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hlsRef = useRef<Hls | null>(null);
 
-  // Proxy everything to bypass CORS/Security, EXCEPT for the high-performance Bangla streams (gpcdn.net)
-  // which are faster when played directly and don't have CORS issues.
+  // Proxy everything to bypass CORS/Security, EXCEPT for the high-performance Bangla streams (gpcdn.net),
+  // Vercel apps, and Cloudflare Workers (workers.dev) which usually support CORS and are faster directly.
   const proxiedUrl = (
     url.startsWith('http://') || 
-    !url.includes('gpcdn.net')
+    (!url.includes('gpcdn.net') && !url.includes('vercel.app') && !url.includes('workers.dev'))
   ) ? `/api/proxy?url=${encodeURIComponent(url)}` : url;
 
   const handleInteraction = () => {
@@ -149,7 +149,16 @@ function VideoPlayer({ url, channelName, isMiniPlayer }: { url: string, channelN
       video.addEventListener('pause', handlePause);
       video.addEventListener('canplay', handleCanPlay);
 
-      if (Hls.isSupported()) {
+      const isMp4 = url.toLowerCase().includes('.mp4') || url.toLowerCase().includes('.mkv');
+
+      if (isMp4) {
+        video.src = proxiedUrl;
+        video.play().catch(e => console.log("Auto-play blocked:", e));
+        video.addEventListener('error', () => {
+             setError("Failed to load video file");
+             setIsLoading(false);
+        });
+      } else if (Hls.isSupported()) {
         hls = new Hls({
           enableWorker: true,
           lowLatencyMode: false, // Disabled for stability

@@ -62,13 +62,7 @@
     "category": "Bangla",
     "streamUrl": "https://owrcovcrpy.gpcdn.net/bpk-tv/1703/output/index.m3u8"
   },
-  { 
-    "id": "ekushey", 
-    "name": "Ekushey TV", 
-    "logo": "https://s4.gifyu.com/images/image534fa27d7683f33d.png", 
-    "category": "Bangla",
-    "streamUrl": "http://210.4.72.204/hls-live/livepkgr/_definst_/liveevent/livestream3.m3u8"
-  },
+
   { 
     "id": "deepto", 
     "name": "Deepto TV", 
@@ -143,8 +137,8 @@
     "id": "jalshamovies", 
     "name": "Jalsha Movies", 
     "logo": "https://i.postimg.cc/44Hzgz5M/high-1772445614.jpg", 
-    "category": "Indian Bangla",
-    "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge3/jalsha-movies/index.m3u8"
+    "category": "Movies",
+    "streamUrl": "https://cloudfrontnet.vercel.app/tplay/playout/209627/master.m3u8"
   },
   { 
     "id": "tsports", 
@@ -283,5 +277,12 @@
     "logo": "https://tvassets.roarzone.info/images/19.png",
     "category": "Bangla",
     "streamUrl": "https://edge2.roarzone.info:8447/roarzone/edge3/bangla-tv/index.m3u8?token=3d360310df3df543fafd4be317af1b6c38d4c05f-580fcc19cdab651074e09242c93770dd-1772545136-1772541536"
+  },
+  {
+    "id": "r_rajkumar_2026",
+    "name": "R...Rajkumar (2026)",
+    "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/5/56/R..._Rajkumar_Poster.jpg/220px-R..._Rajkumar_Poster.jpg",
+    "category": "Movies",
+    "streamUrl": "https://calm-mud-78f7.shimulnath778800.workers.dev/0:/Enjoy-25/Harbal%20movie%20-%20Ads%20Add/9/R%E2%80%A6Rajkumar%20(2026)%20Bengali%20Dubbed%20Movie%201080p%20%20[Ads%20Add]%20(www.EnjoyMoviesHD.Com).mp4"
   }
 ]

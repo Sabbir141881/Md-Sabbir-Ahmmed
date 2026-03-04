@@ -43,20 +43,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
 
     // Special handling for the 198.x IPTV server (PTV, Willow, T Sports)
-    if (targetUrl.includes("198.195.239.50")) {
+    if (targetUrl.includes("198.195.239.50") || targetUrl.includes("103.112.62.174")) {
       headers = {
-        "User-Agent": "VLC/3.0.18 LibVLC/3.0.18",
+        "User-Agent": "VLC/3.0.20 LibVLC/3.0.20",
         "Connection": "keep-alive",
-        "Accept": "*/*"
+        "Accept": "*/*",
+        "Referer": urlObj.origin + "/"
       };
     }
+      
+    // Special handling for roarzone (Sony, Star Sports)
+    if (targetUrl.includes("roarzone.info")) {
+        // Roarzone often works better with no referer or specific ones
+        // Keeping it standard usually works, but ensuring no cache is key
+        headers["Cache-Control"] = "no-cache";
+        headers["Pragma"] = "no-cache";
+    }
 
-    console.log(`[Proxy] Fetching: ${targetUrl}`);
+    // Special handling for Vercel apps (Jalsha Movies, etc.)
+    if (targetUrl.includes("vercel.app")) {
+        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
+        try {
+          headers["Origin"] = new URL(targetUrl).origin;
+          headers["Referer"] = new URL(targetUrl).origin + "/";
+        } catch (e) {}
+    }
+
+    console.log(`[Proxy] Fetching: ${targetUrl} with UA: ${headers['User-Agent']}`);
 
     const response = await fetch(targetUrl, {
       agent,
       headers,
-      timeout: 30000, // 30s timeout
+      timeout: 60000, // Increased to 60s timeout
       redirect: 'follow'
     });
 

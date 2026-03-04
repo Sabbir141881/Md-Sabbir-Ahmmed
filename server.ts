@@ -169,6 +169,15 @@ async function startServer() {
          headers["Pragma"] = "no-cache";
       }
 
+      // Special handling for Vercel apps (Jalsha Movies, etc.)
+      if (targetUrl.includes("vercel.app")) {
+          headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
+          try {
+            headers["Origin"] = new URL(targetUrl).origin;
+            headers["Referer"] = new URL(targetUrl).origin + "/";
+          } catch (e) {}
+      }
+
       // MANDATORY FIX 6: Logging upstream requests
       console.log(`[Proxy] Fetching: ${targetUrl} with UA: ${headers['User-Agent']}`);
 
