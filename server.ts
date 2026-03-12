@@ -6,28 +6,9 @@ import { fileURLToPath } from "url";
 import http from "http";
 import https from "https";
 import fs from "fs";
-import Database from 'better-sqlite3';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// --- Database Setup ---
-const dbPath = path.join(__dirname, 'database.sqlite');
-const db = new Database(dbPath);
-
-// Create users table if not exists
-db.exec(`
-  CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )
-`);
-
-const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
 
 // Create agents with keep-alive enabled and SSL verification disabled for IPTV compatibility
 const httpAgent = new http.Agent({ keepAlive: true });
@@ -42,77 +23,6 @@ async function startServer() {
 
   // Middleware for parsing JSON bodies
   app.use(express.json());
-
-  // --- Authentication API ---
-
-  // Register
-  app.post("/api/auth/register", async (req, res) => {
-    const { username, password } = req.body;
-
-    if (!username || !password) {
-      return res.status(400).json({ error: "Username and password are required" });
-    }
-
-    try {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const insert = db.prepare('INSERT INTO users (username, password) VALUES (?, ?)');
-      const info = insert.run(username, hashedPassword);
-      
-      const token = jwt.sign({ id: info.lastInsertRowid, username }, SECRET_KEY, { expiresIn: '7d' });
-      
-      res.json({ success: true, token, user: { id: info.lastInsertRowid, username } });
-    } catch (error: any) {
-      if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-        return res.status(400).json({ error: "Username already exists" });
-      }
-      res.status(500).json({ error: "Registration failed" });
-    }
-  });
-
-  // Login
-  app.post("/api/auth/login", async (req, res) => {
-    const { username, password } = req.body;
-
-    if (!username || !password) {
-      return res.status(400).json({ error: "Username and password are required" });
-    }
-
-    try {
-      const stmt = db.prepare('SELECT * FROM users WHERE username = ?');
-      const user = stmt.get(username) as any;
-
-      if (!user) {
-        return res.status(401).json({ error: "Invalid credentials" });
-      }
-
-      const validPassword = await bcrypt.compare(password, user.password);
-      if (!validPassword) {
-        return res.status(401).json({ error: "Invalid credentials" });
-      }
-
-      const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: '7d' });
-      
-      res.json({ success: true, token, user: { id: user.id, username: user.username } });
-    } catch (error) {
-      res.status(500).json({ error: "Login failed" });
-    }
-  });
-
-  // Verify Token (Me)
-  app.get("/api/auth/me", (req, res) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ error: "No token provided" });
-    }
-
-    const token = authHeader.split(' ')[1];
-    try {
-      const decoded = jwt.verify(token, SECRET_KEY);
-      res.json({ user: decoded });
-    } catch (error) {
-      res.status(401).json({ error: "Invalid token" });
-    }
-  });
 
   // --- Channel Management API ---
   const channelsFilePath = path.join(__dirname, 'public', 'channels.json');
