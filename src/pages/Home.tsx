@@ -50,8 +50,17 @@ function VideoPlayer({ url, channelName, isMiniPlayer }: { url: string, channelN
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   
+  // Time & Seeking State
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [buffered, setBuffered] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hlsRef = useRef<Hls | null>(null);
+
+  // Determine if source is MP4/MKV
+  const isMp4 = url.toLowerCase().includes('.mp4') || url.toLowerCase().includes('.mkv');
 
   // Proxy everything to bypass CORS/Security, EXCEPT for the high-performance Bangla streams (gpcdn.net),
   // Vercel apps, and Cloudflare Workers (workers.dev) which usually support CORS and are faster directly.
@@ -143,13 +152,30 @@ function VideoPlayer({ url, channelName, isMiniPlayer }: { url: string, channelN
       };
       const handlePause = () => setIsPlaying(false);
       const handleCanPlay = () => setIsLoading(false);
+      
+      const handleTimeUpdate = () => {
+        if (!isDragging) {
+          setCurrentTime(video.currentTime);
+          setDuration(video.duration);
+        }
+        
+        // Update buffered state
+        if (video.buffered.length > 0) {
+          for (let i = 0; i < video.buffered.length; i++) {
+            if (video.buffered.start(i) <= video.currentTime && video.buffered.end(i) >= video.currentTime) {
+              setBuffered(video.buffered.end(i));
+              break;
+            }
+          }
+        }
+      };
 
       video.addEventListener('waiting', handleWaiting);
       video.addEventListener('playing', handlePlaying);
       video.addEventListener('pause', handlePause);
       video.addEventListener('canplay', handleCanPlay);
-
-      const isMp4 = url.toLowerCase().includes('.mp4') || url.toLowerCase().includes('.mkv');
+      video.addEventListener('timeupdate', handleTimeUpdate);
+      video.addEventListener('progress', handleTimeUpdate);
 
       if (isMp4) {
         video.src = proxiedUrl;
@@ -186,11 +212,15 @@ function VideoPlayer({ url, channelName, isMiniPlayer }: { url: string, channelN
         hls.attachMedia(video);
         
         hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-          const availableLevels = data.levels.map((level, index) => ({
-            index,
-            height: level.height,
-            bitrate: level.bitrate
-          })).sort((a, b) => b.height - a.height);
+          const availableLevels = data.levels
+            .map((level, index) => ({
+              index,
+              height: level.height,
+              bitrate: level.bitrate
+            }))
+            .filter(level => level.height > 0) // Filter out audio-only or invalid levels
+            .sort((a, b) => b.height - a.height);
+            
           setLevels(availableLevels);
           video.play().catch(e => console.log("Auto-play blocked:", e));
         });
@@ -257,6 +287,8 @@ function VideoPlayer({ url, channelName, isMiniPlayer }: { url: string, channelN
         video.removeEventListener('playing', handlePlaying);
         video.removeEventListener('pause', handlePause);
         video.removeEventListener('canplay', handleCanPlay);
+        video.removeEventListener('timeupdate', handleTimeUpdate);
+        video.removeEventListener('progress', handleTimeUpdate);
         if (hls) {
           hls.destroy();
           hlsRef.current = null;
@@ -278,6 +310,26 @@ function VideoPlayer({ url, channelName, isMiniPlayer }: { url: string, channelN
     if (height >= 720) return 'HD';
     if (height >= 480) return 'SD';
     return 'Low';
+  };
+
+  const formatTime = (seconds: number) => {
+    if (!seconds || isNaN(seconds)) return "00:00";
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    
+    if (h > 0) {
+      return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const time = parseFloat(e.target.value);
+    setCurrentTime(time);
+    if (videoRef.current) {
+      videoRef.current.currentTime = time;
+    }
   };
 
   return (
@@ -368,6 +420,51 @@ function VideoPlayer({ url, channelName, isMiniPlayer }: { url: string, channelN
           
           {/* Custom Controls Bar */}
           <div className={`absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/50 to-transparent transition-opacity duration-300 z-50 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
+            
+            {/* Progress Bar - Only show if duration is valid (VOD) */}
+            {duration > 0 && !isNaN(duration) && duration !== Infinity && (
+              <div className="mb-4 flex items-center gap-3 group/progress">
+                 <span className="text-xs font-medium text-white/80 w-10 text-right">{formatTime(currentTime)}</span>
+                 
+                 <div className="relative flex-1 h-1 cursor-pointer group-hover/progress:h-1.5 transition-all">
+                    {/* Background Track */}
+                    <div className="absolute inset-0 bg-white/20 rounded-full" />
+                    
+                    {/* Buffered Track */}
+                    <div 
+                      className="absolute top-0 left-0 h-full bg-white/40 rounded-full transition-all duration-300"
+                      style={{ width: `${(buffered / duration) * 100}%` }}
+                    />
+
+                    {/* Progress Track */}
+                    <div 
+                      className="absolute top-0 left-0 h-full bg-red-500 rounded-full transition-all duration-100 relative"
+                      style={{ width: `${(currentTime / duration) * 100}%` }}
+                    >
+                       {/* Thumb */}
+                       <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-3 h-3 bg-red-500 rounded-full scale-0 group-hover/progress:scale-100 transition-transform shadow-lg border-2 border-white" />
+                    </div>
+                    
+                    {/* Input Range */}
+                    <input 
+                      type="range" 
+                      min="0" 
+                      max={duration} 
+                      step="0.1"
+                      value={currentTime}
+                      onChange={handleSeek}
+                      onMouseDown={() => setIsDragging(true)}
+                      onMouseUp={() => setIsDragging(false)}
+                      onTouchStart={() => setIsDragging(true)}
+                      onTouchEnd={() => setIsDragging(false)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    />
+                 </div>
+
+                 <span className="text-xs font-medium text-white/80 w-10">{formatTime(duration)}</span>
+              </div>
+            )}
+
             <div className="flex items-center justify-between gap-4">
                {/* Left Controls */}
                <div className="flex items-center gap-4">
@@ -385,17 +482,19 @@ function VideoPlayer({ url, channelName, isMiniPlayer }: { url: string, channelN
                    {isMuted ? <VolumeX className="w-6 h-6" /> : <Volume2 className="w-6 h-6" />}
                  </button>
                  
-                 {/* Live Indicator inside controls for mobile */}
-                 <div className="flex items-center gap-2 px-3 py-1 bg-red-500/20 border border-red-500/30 rounded-full">
-                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-red-500">LIVE</span>
-                 </div>
+                 {/* Live Indicator - Only show if NO duration (Live) */}
+                 {(!duration || isNaN(duration) || duration === Infinity) && (
+                   <div className="flex items-center gap-2 px-3 py-1 bg-red-500/20 border border-red-500/30 rounded-full">
+                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-red-500">LIVE</span>
+                   </div>
+                 )}
                </div>
 
                {/* Right Controls */}
                <div className="flex items-center gap-4">
-                 {/* Quality Button */}
-                 {levels.length > 0 && (
+                 {/* Quality Button - Hide for MP4/MKV or if no levels */}
+                 {!isMp4 && levels.length > 0 && (
                    <div className="relative">
                       <button 
                         onClick={(e) => {
@@ -405,7 +504,7 @@ function VideoPlayer({ url, channelName, isMiniPlayer }: { url: string, channelN
                         className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 border border-white/10 text-white hover:bg-white/20 transition-all text-xs font-bold"
                       >
                         <Settings className="w-4 h-4" />
-                        <span className="hidden sm:inline">{currentLevel === -1 ? 'Auto' : `${levels[currentLevel]?.height}p`}</span>
+                        <span className="hidden sm:inline">{currentLevel === -1 ? 'Auto' : getQualityLabel(levels[currentLevel]?.height)}</span>
                       </button>
 
                       <AnimatePresence>
@@ -433,7 +532,7 @@ function VideoPlayer({ url, channelName, isMiniPlayer }: { url: string, channelN
                                   onClick={() => changeQuality(level.index)}
                                   className={`w-full px-4 py-3 text-left text-xs font-bold transition-colors hover:bg-white/10 flex justify-between items-center ${currentLevel === level.index ? 'text-amber-500 bg-white/5' : 'text-gray-300'}`}
                                 >
-                                  <span>{level.height}p</span>
+                                  <span>{level.height}p <span className="text-[10px] opacity-50 ml-1">{getQualityLabel(level.height)}</span></span>
                                   {currentLevel === level.index && <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />}
                                 </button>
                               ))}

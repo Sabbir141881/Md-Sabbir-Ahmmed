@@ -1,5 +1,9 @@
 {
 	"appId": "com.sabbir95.app",
-	"appName": "Sabbir95",
-	"webDir": "dist"
+	"appName": "Planet Tv",
+	"webDir": "dist",
+	"server": {
+		"androidScheme": "https",
+		"cleartext": true
+	}
 }
